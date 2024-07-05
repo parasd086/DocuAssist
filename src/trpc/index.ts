@@ -8,18 +8,28 @@ export const appRouter = router({
   //publicProcedure.query mainly for GET
   //publicProcedure.mutation mainly for mutation
   authCallback: publicProcedure.query(async () => {
-    const { getUser } = await getKindeServerSession();
+    const { getUser } = getKindeServerSession();
     const user = await getUser();
 
     if (!user || !user.id || !user.email)
       throw new TRPCError({ code: "UNAUTHORIZED" });
 
     // check if the user is in the database
-    const dbUser = db.user.findFirst({
+    const dbUser = await db.user.findFirst({
       where: {
-        id: user.id,
+        id: user.id, //id is the kinde user id
       },
     });
+
+    if (!dbUser) {
+      //create user in DB
+      await db.user.create({
+        data: {
+          id: user.id,
+          email: user.email,
+        },
+      });
+    }
 
     return { success: true };
   }),

@@ -12,6 +12,8 @@ const Providers = ({ children }: PropsWithChildren) => {
   //trpc is thin type safe wrapper around react-query
   const [trpcClient] = useState(() =>
     trpc.createClient({
+      // links = arrays of ways you want to interact when you call trpc function
+      //Array of links means, data first will be passed thru first link then the next link then the next... BUT http is considered as ending link means only 1 link nothing after this will be considered.
       links: [
         httpBatchLink({
           // This is where all the request from trpc are going to sent to
