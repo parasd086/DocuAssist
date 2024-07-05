@@ -1,6 +1,7 @@
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { publicProcedure, router } from "./trpc";
 import { TRPCError } from "@trpc/server";
+import { db } from "@/db";
 
 // All API logic will be here
 export const appRouter = router({
@@ -14,6 +15,11 @@ export const appRouter = router({
       throw new TRPCError({ code: "UNAUTHORIZED" });
 
     // check if the user is in the database
+    const dbUser = db.user.findFirst({
+      where: {
+        id: user.id,
+      },
+    });
 
     return { success: true };
   }),
