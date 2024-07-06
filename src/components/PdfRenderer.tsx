@@ -49,6 +49,9 @@ const PdfRenderer = ({ url }: PdfRendererProps) => {
   const [rotation, setRotation] = useState<number>(0);
   const [renderedScale, setRenderedScale] = useState<number | null>(null);
 
+  //if there's mimatch b/w scale and renderedScale that means we loading
+  const isLoading = renderedScale !== scale;
+
   const { toast } = useToast();
   const { width, ref } = useResizeDetector();
 
@@ -190,11 +193,30 @@ const PdfRenderer = ({ url }: PdfRendererProps) => {
               file={url}
               className="max-h-full"
             >
+              {isLoading && renderedScale ? (
+                <Page
+                  width={width ? width : 1}
+                  pageNumber={currPage}
+                  scale={scale}
+                  rotate={rotation}
+                  key={"@" + renderedScale}
+                />
+              ) : null}
+
               <Page
+                className={cn(isLoading ? "hidden" : "")}
                 width={width ? width : 1}
                 pageNumber={currPage}
                 scale={scale}
                 rotate={rotation}
+                // to give pages certian integrity
+                key={"@" + scale}
+                loading={
+                  <div className="flex justify-center">
+                    <Loader2 className="my-24 h-6 w-6 animate-spin" />
+                  </div>
+                }
+                onRenderSuccess={() => setRenderedScale(scale)}
               />
             </Document>
           </div>
