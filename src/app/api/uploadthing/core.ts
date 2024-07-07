@@ -31,7 +31,7 @@ export const ourFileRouter = {
 
       //index the file
       try {
-        //first we need the pdf file-
+        //fetch the url in memory-
         const response = await fetch(
           `https://uploadthing-prod-sea1.s3.us-west-2.amazonaws.com/${file.key}`
         );
@@ -59,6 +59,7 @@ export const ourFileRouter = {
         await PineconeStore.fromDocuments(pageLevelDocs, embeddings, {
           pineconeIndex,
           namespace: createdFile.id, //we can save vectors to certain namespace and when we query by fileId we get all the vectors for that certain file
+          maxConcurrency: 5,
         });
 
         //DB call to update the file to a "SUCCESSFUL" uploadStatus enum
